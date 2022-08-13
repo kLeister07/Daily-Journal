@@ -29,35 +29,42 @@ const postsSchema = new mongoose.Schema({
   content: String
 });
 // Create model 
-const post = mongoose.model("Post", postsSchema);
-let posts = [];
+const Post = mongoose.model("Post", postsSchema);
+
 
 app.get("/", function(req, res){
-  res.render("home", {
-    startingContent: homeStartingContent,
-    posts: posts
+  Post.find({}, function(err, posts){
+    res.render("home", {
+      startingContent: homeStartingContent,
+      posts: posts
     });
+  });
 });
+
 
 app.get("/compose", function(req, res){
   res.render("compose");
 });
 
 app.post("/compose", function(req, res){
-  const post = {
+  const post = new Post ({
     title: req.body.postTitle,
     content: req.body.postBody
-  };
+  });
+post.save(function(err){
+  if(!err){res.redirect("/")}});
+  });
 
-  posts.push(post);
 
-  res.redirect("/");
-
-});
-
-app.get("/posts/:postName", function(req, res){
+app.get("/posts/:postId", function(req, res){
   const requestedTitle = _.lowerCase(req.params.postName);
-
+  const requestedPostId = req.params.postId;
+  post.findOne({_id:requestedPostId},function(err, post){
+    res.render("post",{
+      title: post.title,
+      content: post.content
+    });
+  });
   posts.forEach(function(post){
     const storedTitle = _.lowerCase(post.title);
 
