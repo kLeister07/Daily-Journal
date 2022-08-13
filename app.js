@@ -31,7 +31,7 @@ const postsSchema = new mongoose.Schema({
 // Create model 
 const Post = mongoose.model("Post", postsSchema);
 
-
+// Render posts on home page
 app.get("/", function(req, res){
   Post.find({}, function(err, posts){
     res.render("home", {
@@ -46,6 +46,7 @@ app.get("/compose", function(req, res){
   res.render("compose");
 });
 
+// compose post and save to database
 app.post("/compose", function(req, res){
   const post = new Post ({
     title: req.body.postTitle,
@@ -55,7 +56,7 @@ post.save(function(err){
   if(!err){res.redirect("/")}});
   });
 
-
+// create page for each post
 app.get("/posts/:postId", function(req, res){
   const requestedTitle = _.lowerCase(req.params.postName);
   const requestedPostId = req.params.postId;
